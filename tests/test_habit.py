@@ -164,8 +164,7 @@ def test_prevent_double_check_off(setup_daily_habit):
     cur = db.cursor()
     cur.execute(
         "SELECT * FROM check_offs WHERE habit_name=? AND check_off_date=?",
-        (habit.name, "2024-11-14"),
-    )
+        (habit.name, "2024-11-14"))
     result = cur.fetchall()
     assert len(result) == 1  # Only one entry exists
 
@@ -257,10 +256,14 @@ def test_longest_streak_single_streak_daily(setup_daily_habit):
     """
     # finished streak
     db, habit = setup_daily_habit
+    habit.check_off(db, date.today() - timedelta(days=10))
+    habit.check_off(db, date.today() - timedelta(days=9))
+    habit.check_off(db, date.today() - timedelta(days=8))
     habit.check_off(db, date.today() - timedelta(days=6))
     habit.check_off(db, date.today() - timedelta(days=5))
     habit.check_off(db, date.today() - timedelta(days=4))
     habit.check_off(db, date.today() - timedelta(days=3))
+
 
     result = habit.longest_streak(db)
     assert result["longest_streak"] == 4
@@ -304,14 +307,54 @@ def test_longest_streak_multiple_streaks_daily(setup_daily_habit):
 
 
 
-def test_longest_streak_ongoing_weekly(setup_weekly_habit):
-    """Test longest streak method for a weekly habit with ongoing streak."""
+def test_longest_streak_single_streak_weekly(setup_weekly_habit):
+    """
+    Test longest streak method for a weekly habit with single longest streak.
+    Check for differentiation between longest = ongoing vs. finished streak.
+    """
     db, habit = setup_weekly_habit
+    habit.check_off(db, date.today() - timedelta(weeks=8))
+    habit.check_off(db, date.today() - timedelta(weeks=7))
+    habit.check_off(db, date.today() - timedelta(weeks=6))
+    habit.check_off(db, date.today() - timedelta(weeks=5))
+    habit.check_off(db, date.today() - timedelta(weeks=4))
+    result = habit.longest_streak(db)
+    assert result["longest_streak"] == 5
+    assert f"Your longest \"Study\"-streak was 5 week(s) and ended in week" in result["message"]
+
+    # ongoing streak
+    habit.check_off(db, date.today() - timedelta(weeks=3))
+    habit.check_off(db, date.today() - timedelta(weeks=2))
+    habit.check_off(db, date.today() - timedelta(weeks=1))
+    habit.check_off(db, date.today())
+    result = habit.longest_streak(db)
+    assert result["longest_streak"] == 9
+    assert f"Your longest \"Study\"-streak is 9 week(s) and is still going." in result["message"]
+
+
+def test_longest_streak_multiple_streaks_weekly(setup_weekly_habit):
+    """
+    Test longest streak method for a weekly habit with multiple longest streaks.
+    Check for differentiation between longest = ongoing vs. finished streak
+    """
+    db, habit = setup_weekly_habit
+    # Create two separate 3-day streaks. no ongoing one
+    habit.check_off(db, date.today() - timedelta(weeks=10))
+    habit.check_off(db, date.today() - timedelta(weeks=9))
+    habit.check_off(db, date.today() - timedelta(weeks=8))
+    habit.check_off(db, date.today() - timedelta(weeks=6))
+    habit.check_off(db, date.today() - timedelta(weeks=5))
+    habit.check_off(db, date.today() - timedelta(weeks=4))
+    result = habit.longest_streak(db)
+    assert result["longest_streak"] == 3
+    expected_message = f"\nLongest Streak: You've had 2 separate longest streaks of 3 week(s) for \"Study\", with the most recent one ending in week:"
+    assert expected_message in result["message"]
+
+    # Create a third 3-day streak, which is ongoing
     habit.check_off(db, date.today() - timedelta(weeks=2))
     habit.check_off(db, date.today() - timedelta(weeks=1))
     habit.check_off(db, date.today())
     result = habit.longest_streak(db)
     assert result["longest_streak"] == 3
-    assert f"Your longest \"Study\"-streak is 3 week(s) and is still going." in result["message"]
-
-
+    expected_message = f"\nLongest Streak: You've had 3 separate longest streaks of 3 week(s) for \"Study\". Check it off next week to set a new record."
+    assert expected_message in result["message"]

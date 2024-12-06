@@ -49,17 +49,20 @@ def load_mock_data():
 
     book = Habit("MOCK - Finish Reading One Book", "finish reading any book", "weekly", dayminus(23))
     book.store(db)
+    book.check_off(db,dayminus(28),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     book.check_off(db,dayminus(21),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     book.check_off(db,dayminus(14),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     book.check_off(db,dayminus(7),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
 
     culture = Habit("MOCK - Culture-Night", "visit theatre, opera, concert,...", "weekly", dayminus(22))
     culture.store(db)
+    culture.check_off(db,dayminus(21),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     culture.check_off(db,dayminus(14),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     culture.check_off(db,dayminus(7),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
 
     toenails = Habit("MOCK - Cut Toenails", "avoid nasty feet", "weekly", dayminus(18))
     toenails.store(db)
+    toenails.check_off(db,dayminus(21),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     toenails.check_off(db,dayminus(14),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
     toenails.check_off(db,dayminus(7),f"{random.randint(7, 23):02}:{random.randint(0, 59):02}")
 
