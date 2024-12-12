@@ -20,14 +20,12 @@ def statistics_loop(db):
         # Display the statistics menu
         stats_choice = questionary.select(
             "STATISTICS MENU: please choose",
-            choices=["View Your Habits", "Individual Habit & Streak Analysis", "Your Record Streaks", "BACK TO MAIN MENU"],
-        ).ask()
+            choices=["View Your Habits", "Individual Habit & Streak Analysis", "Your Record Streaks", "BACK TO MAIN MENU"]).ask()
 
         if stats_choice == "View Your Habits":
             periodicity = questionary.select(
                 "\nWhich Habits do you want to view?",
-                choices=["daily", "weekly", "all"],
-            ).ask()
+                choices=["daily", "weekly", "all"]).ask()
             if periodicity == "all":
                 # Use default function and don't filter
                 print_yellow(display_habits_table(db))
@@ -87,7 +85,8 @@ def statistics_loop(db):
                     print_green(f"\nYou achieved your longest daily streak of \033[1m{streak_daily[0]['streak']}\033[22m day(s) "
                                 f"with \"{streak_daily[0]['habit']}\", last checked-off on {streak_daily[0]['last_date']}.")
                 else:
-                    print_green(f"\nYou have {occasions} different longest daily streaks with \033[1m{streak_daily[0]['streak']}\033[22m day(s).\n") # just take the streak count from the first entry in the dictionary
+                    print_green(f"\nYou have {occasions} different longest daily streaks with"
+                                f" \033[1m{streak_daily[0]['streak']}\033[22m day(s).\n") # just take the streak count from the first entry in the dictionary
                     for index, entry in enumerate(streak_daily, 1):
                         print_green(f"{index}. \"{entry['habit']}\"-streak, last checked-off on {entry['last_date']}.")
 
