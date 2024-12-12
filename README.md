@@ -11,8 +11,8 @@ This is a Python-based habit tracking application that helps you monitor your da
 ## Installation
 Ensure you have Python 3.x installed. Then, clone this repository and navigate to its directory:
 ```shell
-git clone <https://github.com/David1son/IU_Habit_Tracker>
-cd <IU_Habit_Tracker>
+git clone https://github.com/David1son/IU_Habit_Tracker
+cd IU_Habit_Tracker
 ```
 Install the necessary libraries using the following command:
 ```shell
