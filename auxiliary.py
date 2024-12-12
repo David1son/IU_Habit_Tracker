@@ -45,7 +45,7 @@ Welcome to the Habit Tracker Help Center! Below you’ll find guidance on how to
 
 \033[1m3. Remove Habit\033[22m  
 - Select this option to delete a habit and all its related data, including check-offs.  
-- Be careful—this action cannot be undone.  
+- Be careful — this action cannot be undone.  
 
 \033[1m4. Statistics Menu\033[22m  
 Dive deeper into your habits and streaks with the following options:  
@@ -55,7 +55,7 @@ Dive deeper into your habits and streaks with the following options:
    - Analyze a specific habit's performance.  
    - View all past check-offs, your current streak and your longest streak.
    - Note that by design there can only be a current streak if you checked off your habit for today/this week.
-   - The longest streak shows your best streak for a given habit, highlighting the most recent one in case of a tie.  
+   - The longest streak highlights the most recent one in case of a tie.  
 3. \033[1mYour Record Streaks:\033[22m  
    - See your longest overall streaks for both daily and weekly habits.  
    - In case of a tie, it shows all of the longest streaks.

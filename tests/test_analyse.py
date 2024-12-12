@@ -4,6 +4,7 @@ from datetime import date
 from database import get_db
 from analyse import hyper_streak_daily, hyper_streak_weekly
 
+
 @pytest.fixture
 def db_connection():
     """Fixture for setting up and tearing down an in-memory SQLite database."""
@@ -23,7 +24,7 @@ def test_hyper_streak_daily_empty_db(db_connection):
 
 
 def test_hyper_streak_daily_single_habit(db_connection):
-    """Test hyper_streak_daily with a single habit."""
+    """Test hyper_streak_daily with a single record streak."""
     db = db_connection
 
     habit_1 = Habit("Daily Habit 1","a description","daily")
@@ -33,6 +34,14 @@ def test_hyper_streak_daily_single_habit(db_connection):
     habit_1.check_off(db, date.fromisoformat("2024-11-22"))
     habit_1.check_off(db, date.fromisoformat("2024-11-23"))
 
+    habit_2 = Habit("Daily Habit 2", "another description", "daily")
+    habit_2.store(db)
+    # generate a 3 day streak for Habit 2 that should not appear
+    habit_2.check_off(db, date.fromisoformat("2024-11-10"))
+    habit_2.check_off(db, date.fromisoformat("2024-11-11"))
+    habit_2.check_off(db, date.fromisoformat("2024-11-12"))
+
+
 
 
     result = hyper_streak_daily(db)
@@ -41,7 +50,7 @@ def test_hyper_streak_daily_single_habit(db_connection):
 
 
 def test_hyper_streak_daily_multiple_habits(db_connection):
-    """Test hyper_streak_daily with multiple habits."""
+    """Test hyper_streak_daily with multiple longest streaks."""
     db = db_connection
 
     habit_1 = Habit("Daily Habit 1", "a description", "daily")
@@ -68,6 +77,15 @@ def test_hyper_streak_daily_multiple_habits(db_connection):
     habit_2.check_off(db, date.fromisoformat("2024-11-28"))
     habit_2.check_off(db, date.fromisoformat("2024-11-29"))
 
+    habit_3 = Habit("Daily Habit 3", "yet another description", "daily")
+    habit_3.store(db)
+    # generate a 4 day streak for Habit 3, that shouldn't appear as record streak
+    habit_3.check_off(db, date.fromisoformat("2024-11-20"))
+    habit_3.check_off(db, date.fromisoformat("2024-11-19"))
+    habit_3.check_off(db, date.fromisoformat("2024-11-18"))
+    habit_3.check_off(db, date.fromisoformat("2024-11-17"))
+
+
     result = hyper_streak_daily(db)
     # result should include all three longest daily streaks. Habit 2 has two separate 5 day streaks. Streaks are ordered by check_off_date
     expected = [
@@ -76,7 +94,7 @@ def test_hyper_streak_daily_multiple_habits(db_connection):
         {"habit": "Daily Habit 2", "streak": 5, "last_date": "2024-11-29"}]
     assert result == expected
 
-    # reassure it returns single hyper streak after additional check-off
+    # reassure it returns single hyper streak after additional check-off for Habit 2
     habit_2.check_off(db, date.fromisoformat("2024-11-30"))
     result = hyper_streak_daily(db)
 
@@ -93,7 +111,7 @@ def test_hyper_streak_weekly_empty_db(db_connection):
 
 
 def test_hyper_streak_weekly_single_habit(db_connection):
-    """Test hyper_streak_weekly with a single habit."""
+    """Test hyper_streak_weekly with a single longest streak."""
     db = db_connection
 
     habit_1 = Habit("Weekly Habit 1", "a description", "weekly")
@@ -109,7 +127,7 @@ def test_hyper_streak_weekly_single_habit(db_connection):
 
 
 def test_hyper_streak_weekly_multiple_habits(db_connection):
-    """Test hyper_streak_weekly with multiple habits."""
+    """Test hyper_streak_weekly with multiple longest streaks."""
     db = db_connection
 
     habit_1 = Habit("Weekly Habit 1", "a description", "weekly")

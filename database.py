@@ -17,7 +17,7 @@ def get_db(name="main.db"):
 
 def create_tables(db):
     """
-    Creates the two tables for the habit tracker application and one to just store the flag for predefined habits upload.
+    Creates the two tables for the actual habit tracking and one table to just store the flag for predefined habits upload.
 
     param db: SQLite database connection.
     """
@@ -59,6 +59,7 @@ def add_habit(db, name, description, periodicity, create_date=None): #
 def check_off_habit(db, name, periodicity, check_off_date=None, check_off_time=None):
     """
     Record a habit check-off in the database (check_offs table), ensuring the date is unique.
+    Auto-increments the streak-count if it was checked-off in previous period.
 
     :param db: SQLite database connection object.
     :param name: Name of the habit.
@@ -80,7 +81,7 @@ def check_off_habit(db, name, periodicity, check_off_date=None, check_off_time=N
         cur.execute("SELECT 1 FROM check_offs WHERE habit_name = ? AND check_off_date = ?",
             (name, str(check_off_date)))
         if cur.fetchone():  # If a record is found  -> abort
-            print(f"Habit '{name}' is already checked off for {check_off_date}.")  # delete!!!!!!!!!!!!!!!1
+            print(f"Habit '{name}' is already checked off for {check_off_date}.")  # not relevant for app, leave in for testing
             return
         else:
             # Check if habit was checked off 1 day prior to the check-off date
@@ -195,11 +196,13 @@ def display_check_offs_table(db, habit_name, periodicity):
 
     # Build the query dynamically based on the filters
     if periodicity == "weekly":
-        query = f"""SELECT check_off_date AS "Check-Off-Dates", check_off_time AS "Check-Off-Time", calendar_week AS "Check-Off-Week", streak_week_count AS "Streak-Count" 
-                    FROM check_offs WHERE habit_name = '{habit_name}' ORDER BY check_off_date"""
+        query = f"""SELECT check_off_date AS "Check-Off-Dates", check_off_time AS "Check-Off-Time", 
+                calendar_week AS "Check-Off-Week", streak_week_count AS "Streak-Count" 
+                FROM check_offs WHERE habit_name = '{habit_name}' ORDER BY check_off_date"""
     else:  # periodicity == "daily"
-        query = f"""SELECT check_off_date AS "Check-Off-Dates", check_off_time AS "Check-Off-Time", streak_day_count AS "Streak-Count" 
-                    FROM check_offs WHERE habit_name = '{habit_name}' ORDER BY check_off_date"""
+        query = f"""SELECT check_off_date AS "Check-Off-Dates", check_off_time AS "Check-Off-Time", 
+                streak_day_count AS "Streak-Count" 
+                FROM check_offs WHERE habit_name = '{habit_name}' ORDER BY check_off_date"""
 
 
     cur.execute(query)

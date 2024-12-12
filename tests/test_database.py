@@ -8,8 +8,6 @@ from datetime import date
 def db_connection():
     """Fixture to set up and tear down an in-memory SQLite database."""
     db = get_db(":memory:")
-    cur = db.cursor()
-
 
     habit_1 = Habit("Habit 1","Daily Habit 1", "daily", "2024-12-01")
     habit_2 = Habit("Habit 2","Weekly Habit 1", "weekly", "2024-11-19")

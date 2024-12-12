@@ -1,6 +1,5 @@
 from analyse import current_streak_calculation, longest_streak_calculation
 from database import add_habit, check_off_habit
-from datetime import date
 
 
 class Habit:
@@ -24,14 +23,15 @@ class Habit:
     def __str__(self):
         return f"name: {self.name}, description: {self.description}, periodicity: {self.periodicity}, create_date: {self.create_date}"
 
+
     def store(self, db):
         """
         Store the habit in the database.
 
         :param db: SQLite database connection object.
-        :param create_date: Date the habit should be stored with (default is today).
         """
         add_habit(db, self.name, self.description, self.periodicity, self.create_date)
+
 
     def check_off(self, db,check_off_date=None, check_off_time=None):
         """

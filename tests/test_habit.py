@@ -98,8 +98,7 @@ def test_streak_day_increment(setup_daily_habit):
     cur = db.cursor()
     cur.execute(
         "SELECT streak_day_count FROM check_offs WHERE habit_name=? AND check_off_date=?",
-        (habit.name, "2024-11-14"),
-    )
+        (habit.name, "2024-11-14"))
     result = cur.fetchone()
     assert result[0] == 4
 
@@ -125,7 +124,7 @@ def test_weekly_streak_increment(setup_weekly_habit):
         date.fromisoformat("2024-11-11"),  # Week 46
         date.fromisoformat("2024-11-20"),  # Week 47
         date.fromisoformat("2024-11-29"),  # Week 48
-    ]
+     ]
 
     for check_off_date in check_off_dates:
         habit.check_off(db, check_off_date)
@@ -149,8 +148,7 @@ def test_weekly_streak_reset(setup_weekly_habit):
     cur = db.cursor()
     cur.execute(
         "SELECT streak_week_count FROM check_offs WHERE habit_name=? AND calendar_week=?",
-        (habit.name, "50-2024"),
-    )
+        (habit.name, "50-2024"))
     result = cur.fetchone()
     assert result[0] == 1  # Streak reset
 
@@ -204,12 +202,16 @@ def test_current_streak_started_daily(setup_daily_habit):
 def test_current_streak_ongoing_daily(setup_daily_habit):
     """Test current streak method for a daily habit with multiple consecutive check-offs."""
     db, habit = setup_daily_habit
+    habit.check_off(db, date.today() - timedelta(days=6))
+    habit.check_off(db, date.today() - timedelta(days=5))
+    habit.check_off(db, date.today() - timedelta(days=4))
+    habit.check_off(db, date.today() - timedelta(days=3))
     habit.check_off(db, date.today() - timedelta(days=2))
     habit.check_off(db, date.today() - timedelta(days=1))
     habit.check_off(db, date.today())
     result = habit.current_streak(db)
-    assert result["current_streak"] == 3
-    assert "Well done! You've kept your \"Exercise\"-streak alive for 3 consecutive days already." in result["message"]
+    assert result["current_streak"] == 7
+    assert "Well done! You've kept your \"Exercise\"-streak alive for 7 consecutive days already." in result["message"]
 
 
 def test_current_streak_no_check_off_weekly(setup_weekly_habit):
@@ -258,11 +260,11 @@ def test_longest_streak_single_streak_daily(setup_daily_habit):
     db, habit = setup_daily_habit
     habit.check_off(db, date.today() - timedelta(days=10))
     habit.check_off(db, date.today() - timedelta(days=9))
-    habit.check_off(db, date.today() - timedelta(days=8))
+    habit.check_off(db, date.today() - timedelta(days=8)) # end of a 3-streak
     habit.check_off(db, date.today() - timedelta(days=6))
     habit.check_off(db, date.today() - timedelta(days=5))
     habit.check_off(db, date.today() - timedelta(days=4))
-    habit.check_off(db, date.today() - timedelta(days=3))
+    habit.check_off(db, date.today() - timedelta(days=3)) # end of a 4-streak
 
 
     result = habit.longest_streak(db)
